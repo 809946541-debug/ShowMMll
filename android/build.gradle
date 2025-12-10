@@ -1,0 +1,55 @@
+buildscript {
+    subprojects {
+        project.configurations.all {
+            resolutionStrategy.eachDependency { details ->
+                if (details.requested.group == 'androidx.lifecycle'
+                    && details.requested.name.contains('lifecycle')) {
+                    details.useVersion "2.6.2"
+                }
+            }
+        }
+    }
+    ext.kotlin_version = '2.0.0'  // 必须与 
+    repositories {
+        google()
+        mavenCentral()
+        maven { url 'https://maven.aliyun.com/repository/google' } // 谷歌镜像
+        maven { url 'https://maven.aliyun.com/repository/public' }  // 公共仓库
+    }
+
+    dependencies {
+        classpath 'com.android.tools.build:gradle:8.3.1'
+        // START: FlutterFire Configuration
+        classpath 'com.google.gms:google-services:4.3.12'
+        // END: FlutterFire Configuration
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+    }
+}
+
+allprojects {
+    repositories {
+        google()
+        mavenCentral()
+        maven { url 'https://maven.aliyun.com/repository/google' } // 谷歌镜像
+        maven { url 'https://maven.aliyun.com/repository/public' }  // 公共仓库
+    }
+    
+    // 为所有子项目添加默认namespace
+    plugins.withId('com.android.library') {
+        android {
+            namespace 'io.flutter.plugins.androidlifecycle'
+        }
+    }
+}
+
+rootProject.buildDir = '../build'
+subprojects {
+    project.buildDir = "${rootProject.buildDir}/${project.name}"
+}
+subprojects {
+    project.evaluationDependsOn(':app')
+}
+
+tasks.register("clean", Delete) {
+    delete rootProject.buildDir
+}
