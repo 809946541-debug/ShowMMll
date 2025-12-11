@@ -473,33 +473,9 @@ class _LibraryCollectionPageState extends State<BookshelfVideoPage>
 
     return BlocProvider<ReadRecommendBookListCubit>(
       create: (context) => ReadRecommendBookListCubit(),
-      child: Scaffold(
-        backgroundColor: HexColor('#F6F6F6'),
-        appBar: PreferredSize(
-          preferredSize: Size.fromHeight(46.w),
-          child: AppBar(
-              backgroundColor: HexColor('#F6F6F6'),
-              // backgroundColor: HexColor('#F6F6F6'),
-              title: Padding(
-                padding: EdgeInsets.only(top: 8.w, bottom: 8.w),
-                child: search_bar.SearchBar(
-                  onFocus: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => LibrarySearchPage(
-                          arguments: {},
-                        ),
-                      ),
-                    );
-                  },
-                ),
-              )),
-        ),
-        body: SafeArea(
-          minimum: EdgeInsets.symmetric(horizontal: 2.w),
-          child: _buildMainView(context),
-        ),
+      child: SafeArea(
+        minimum: EdgeInsets.symmetric(horizontal: 2.w),
+        child: _buildMainView(context),
       ),
     );
   }

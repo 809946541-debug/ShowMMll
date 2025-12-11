@@ -7,7 +7,9 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'component/htmlview_page.dart';
 import 'cubit/user_cubit.dart';
 import 'utils/global_shared_state.dart';
+import 'utils/color.dart';
 import 'views/discover/index.dart';
+import 'views/user/index.dart';
 
 // 重定向事件类
 class RedirectEvent {
@@ -125,17 +127,17 @@ class _SplashPageState extends State<SplashPage> {
       final endTime = DateTime.now().millisecondsSinceEpoch;
       debugPrint('Splash screen displayed for ${endTime - startTime}ms');
 
-      // 直接跳转到发现页，移除tab
+      // 直接跳转到带有侧边栏的主页面
       Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (_) => BookshelfVideoPage(arguments: {})),
+        MaterialPageRoute(builder: (_) => MainLayoutPage()),
       );
       // 正常跳转到主页面
     } catch (e) {
       debugPrint('Splash error: $e');
       if (!mounted) return;
-      // 出错时也直接跳转到发现页
+      // 出错时也直接跳转到主页面
       Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (_) => BookshelfVideoPage(arguments: {})),
+        MaterialPageRoute(builder: (_) => MainLayoutPage()),
       );
     }
   }
@@ -159,6 +161,74 @@ class _SplashPageState extends State<SplashPage> {
   Widget build(BuildContext context) {
     return const Scaffold(
       body: Center(),
+    );
+  }
+}
+
+// 主布局页面，带有侧边栏
+class MainLayoutPage extends StatefulWidget {
+  const MainLayoutPage({Key? key}) : super(key: key);
+
+  @override
+  State<MainLayoutPage> createState() => _MainLayoutPageState();
+}
+
+class _MainLayoutPageState extends State<MainLayoutPage> {
+  // 侧边栏控制器
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      key: _scaffoldKey,
+      // 侧边栏
+      drawer: Drawer(
+        width: 280.w,
+        backgroundColor: Colors.white,
+        child: UserCenterPage(),
+      ),
+      // 主内容区域
+      body: Scaffold(
+        backgroundColor: HexColor('#F6F6F6'),
+        appBar: PreferredSize(
+          preferredSize: Size.fromHeight(46.w),
+          child: AppBar(
+            backgroundColor: HexColor('#F6F6F6'),
+            elevation: 0,
+            leading: IconButton(
+              // 左上角菜单按钮
+              icon: Icon(Icons.menu, color: HexColor('#1B1B1B'), size: 24.w),
+              onPressed: () {
+                // 打开侧边栏
+                _scaffoldKey.currentState?.openDrawer();
+              },
+            ),
+            title: Text(
+              'Discover',
+              style: TextStyle(
+                fontSize: 18.sp,
+                fontWeight: FontWeight.bold,
+                color: HexColor('#1B1B1B'),
+              ),
+            ),
+            centerTitle: true,
+            actions: [
+              // 右上角聊天按钮
+              IconButton(
+                icon: Icon(Icons.chat_bubble_outline, color: HexColor('#1B1B1B'), size: 24.w),
+                onPressed: () {
+                  // 聊天按钮点击事件
+                  print('Chat button clicked');
+                  EasyLoading.showToast('Chat feature coming soon');
+                },
+              ),
+              SizedBox(width: 12.w),
+            ],
+          ),
+        ),
+        // 主内容：发现页面
+        body: BookshelfVideoPage(arguments: {}),
+      ),
     );
   }
 }
