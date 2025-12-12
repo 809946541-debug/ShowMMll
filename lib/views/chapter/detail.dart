@@ -46,14 +46,15 @@ class _ChapterDetailPageState extends State<ChapterDetailPage> {
     super.initState();
     debugPrint('widget.no: ${widget.no}');
     _currentNo = widget.no;
-    _fetchChapter();
     
-    // 初始化视频播放器
+    // 初始化视频播放器（使用默认地址）
     _controller = VideoPlayerController.networkUrl(
       Uri.parse('https://jsreadbucket.oss-eu-central-1.aliyuncs.com/com/temp/7449_1765274010.mp4'),
     );
     _initializeVideoPlayerFuture = _controller.initialize();
     _controller.setLooping(true);
+    
+    _fetchChapter();
   }
 
   @override
@@ -68,8 +69,7 @@ class _ChapterDetailPageState extends State<ChapterDetailPage> {
       _error = null;
     });
     try {
-      final resp =
-          await ChapterApi.getChapter(bookId: widget.bookId, no: _currentNo);
+      final resp = await ChapterApi.getChapter(bookId: widget.bookId, no: _currentNo);
       if (resp.data == null) {
         setState(() {
           _error = 'Chapter Not Found';
@@ -87,6 +87,13 @@ class _ChapterDetailPageState extends State<ChapterDetailPage> {
           _chapter = resp.data;
           _loading = false;
         });
+        
+        // 更新视频播放器地址
+        final String videoUrl = _chapter?.videoUrl ?? 'https://jsreadbucket.oss-eu-central-1.aliyuncs.com/com/temp/7449_1765274010.mp4';
+        _controller.dispose();
+        _controller = VideoPlayerController.networkUrl(Uri.parse(videoUrl));
+        _initializeVideoPlayerFuture = _controller.initialize();
+        _controller.setLooping(true);
       }
     } catch (e) {
       setState(() {

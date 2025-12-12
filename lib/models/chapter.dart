@@ -19,6 +19,7 @@ abstract class Chapter with _$Chapter {
     @JsonKey(name: 'useableCoin') int? useableCoin,
     @JsonKey(name: 'showFavourite') bool? showFavourite,
     @JsonKey(name: 'readPower') bool? readPower,
+    @JsonKey(name: 'videoUrl') String? videoUrl,
   }) = _Chapter;
 
   factory Chapter.fromJson(Map<String, dynamic> json) =>
