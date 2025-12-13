@@ -40,6 +40,10 @@ class _ChapterDetailPageState extends State<ChapterDetailPage> {
   String? _error;
   late VideoPlayerController _controller;
   late Future<void> _initializeVideoPlayerFuture;
+  
+  // 滑动检测相关
+  double _startY = 0.0;
+  double _currentY = 0.0;
 
   @override
   void initState() {
@@ -136,15 +140,28 @@ class _ChapterDetailPageState extends State<ChapterDetailPage> {
             title: Text(_chapter?.title ?? 'chapter'),
           ),
           body: GestureDetector(
-            onVerticalDragUpdate: (details) {
-              // 滑动检测，灵敏度设置为40像素
-              if (details.primaryDelta! < -40 && !_loading) {
-                // 向上滑动 - 上一章
-                _prevChapter();
-              } else if (details.primaryDelta! > 40 && !_loading) {
-                // 向下滑动 - 下一章
-                _nextChapter();
+            // 简化为只使用pan事件链
+            onPanStart: (details) {
+              _startY = details.localPosition.dy;
+            },
+            onPanEnd: (details) {
+              // 计算滑动距离和速度
+              final double distance = _currentY - _startY;
+              final double velocity = details.velocity.pixelsPerSecond.dy;
+              
+              if (!_loading) {
+                // 向下滑动（距离为正）- 下一章
+                if (distance > 30 || velocity > 400) {
+                  _nextChapter();
+                }
+                // 向上滑动（距离为负）- 上一章，需要确保不是第一章
+                else if ((distance < -30 || velocity < -400) && _currentNo > 1) {
+                  _prevChapter();
+                }
               }
+            },
+            onPanUpdate: (details) {
+              _currentY = details.localPosition.dy;
             },
             child: _loading
                 ? const Center(child: CircularProgressIndicator())
