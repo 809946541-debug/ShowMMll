@@ -137,8 +137,12 @@ class _ChapterDetailPageState extends State<ChapterDetailPage> {
           ),
           body: GestureDetector(
             onVerticalDragUpdate: (details) {
-              // 向下滑动检测，灵敏度设置为50像素
-              if (details.primaryDelta! > 50 && !_loading) {
+              // 滑动检测，灵敏度设置为40像素
+              if (details.primaryDelta! < -40 && !_loading) {
+                // 向上滑动 - 上一章
+                _prevChapter();
+              } else if (details.primaryDelta! > 40 && !_loading) {
+                // 向下滑动 - 下一章
                 _nextChapter();
               }
             },
