@@ -135,173 +135,181 @@ class _ChapterDetailPageState extends State<ChapterDetailPage> {
           appBar: AppBar(
             title: Text(_chapter?.title ?? 'chapter'),
           ),
-          body: _loading
-              ? const Center(child: CircularProgressIndicator())
-              : _error != null
-                  ? Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Center(
-                            child: Text(_error!,
-                                style: TextStyle(color: HexColor('#c62828'))),
-                          ),
-                          const SizedBox(height: 20),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              SizedBox(
-                                width: 30.w,
-                                child: Divider(
-                                  color: Colors.grey.withValues(alpha: 0.4),
-                                  height: 1.w,
-                                  thickness: 1.w,
+          body: GestureDetector(
+            onVerticalDragUpdate: (details) {
+              // 向下滑动检测，灵敏度设置为50像素
+              if (details.primaryDelta! > 50 && !_loading) {
+                _nextChapter();
+              }
+            },
+            child: _loading
+                ? const Center(child: CircularProgressIndicator())
+                : _error != null
+                    ? Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Center(
+                              child: Text(_error!,
+                                  style: TextStyle(color: HexColor('#c62828'))),
+                            ),
+                            const SizedBox(height: 20),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                SizedBox(
+                                  width: 30.w,
+                                  child: Divider(
+                                    color: Colors.grey.withValues(alpha: 0.4),
+                                    height: 1.w,
+                                    thickness: 1.w,
+                                  ),
                                 ),
-                              ),
-                              SizedBox(
-                                width: 0.7.sw,
-                                child: Center(
-                                  child: Text(
-                                    'Show your support to inspire the writer to unlock more chapters.'
-                                        .g11n('ReadPage_ReadPowerTip1'),
-                                    textAlign: TextAlign.center,
-                                    style: TextStyle(
-                                      fontSize: 14.sp,
-                                      color: Colors.grey,
+                                SizedBox(
+                                  width: 0.7.sw,
+                                  child: Center(
+                                    child: Text(
+                                      'Show your support to inspire the writer to unlock more chapters.'
+                                          .g11n('ReadPage_ReadPowerTip1'),
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(
+                                        fontSize: 14.sp,
+                                        color: Colors.grey,
+                                      ),
                                     ),
                                   ),
                                 ),
-                              ),
-                              SizedBox(
-                                width: 30.w,
-                                child: Divider(
-                                  color: Colors.grey.withValues(alpha: 0.4),
-                                  height: 1.w,
-                                  thickness: 1.w,
+                                SizedBox(
+                                  width: 30.w,
+                                  child: Divider(
+                                    color: Colors.grey.withValues(alpha: 0.4),
+                                    height: 1.w,
+                                    thickness: 1.w,
+                                  ),
                                 ),
-                              ),
-                            ],
-                          ), Padding(
-                            padding: EdgeInsets.only(top: 8.w),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                BlocBuilder<UserInfoCubit, UserInfo>(
-                                  builder: (context, userInfo) {
-                                    bool isAutoUnLock =
-                                        userInfo.isAutoUnlock ?? false;
-                                    return GestureDetector(
-                                      onTap: () async {
-                                        EasyLoading.show(
-                                          status: '改变自动解锁设置中'.g11n(
-                                            'ReadPage_ChangeAutoUnlockTip',
-                                          ),
-                                        );
-                                        await context
-                                            .read<UserInfoCubit>()
-                                            .changeAutoUnlockSetting(
-                                              !isAutoUnLock,
-                                            );
-                                        EasyLoading.dismiss();
-                                      },
-                                      child: Icon(
-                                        Icons.check_circle,
-                                        color: isAutoUnLock
-                                            ? HexColor('#fc73af')
-                                            : HexColor('#9E9E9E')
-                                                .withValues(alpha: 0.6),
-                                        size: 18.w,
+                              ],
+                            ), Padding(
+                              padding: EdgeInsets.only(top: 8.w),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  BlocBuilder<UserInfoCubit, UserInfo>(
+                                    builder: (context, userInfo) {
+                                      bool isAutoUnLock =
+                                          userInfo.isAutoUnlock ?? false;
+                                      return GestureDetector(
+                                        onTap: () async {
+                                          EasyLoading.show(
+                                            status: '改变自动解锁设置中'.g11n(
+                                              'ReadPage_ChangeAutoUnlockTip',
+                                            ),
+                                          );
+                                          await context
+                                              .read<UserInfoCubit>()
+                                              .changeAutoUnlockSetting(
+                                                !isAutoUnLock,
+                                              );
+                                          EasyLoading.dismiss();
+                                        },
+                                        child: Icon(
+                                          Icons.check_circle,
+                                          color: isAutoUnLock
+                                              ? HexColor('#fc73af')
+                                              : HexColor('#9E9E9E')
+                                                  .withValues(alpha: 0.6),
+                                          size: 18.w,
+                                        ),
+                                      );
+                                    },
+                                  ),
+                                  SizedBox(width: 12.w),
+                                  SizedBox(
+                                    child: Text(
+                                      'Unlock Next Chapter Automatically'.g11n(
+                                        'ReadPage_AutoUnlockChapter',
                                       ),
-                                    );
+                                      maxLines: 1,
+                                      style: TextStyle(
+                                            fontSize: 12.sp,
+                                            color: HexColor('#9E9E9E'),
+                                            overflow: TextOverflow.ellipsis,
+                                          ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      )
+                    : _chapter == null
+                        ? const Center(child: Text('No Data'))
+                        : Padding(
+                            padding: const EdgeInsets.all(16.0),
+                            child: ListView(
+                              children: [
+                                const SizedBox(height: 16),
+                                FutureBuilder(
+                                  future: _initializeVideoPlayerFuture,
+                                  builder: (context, snapshot) {
+                                    if (snapshot.connectionState == ConnectionState.done) {
+                                      return AspectRatio(
+                                        aspectRatio: _controller.value.aspectRatio,
+                                        child: Stack(
+                                          alignment: Alignment.center,
+                                          children: [
+                                            VideoPlayer(_controller),
+                                            FloatingActionButton(
+                                              onPressed: () {
+                                                setState(() {
+                                                  if (_controller.value.isPlaying) {
+                                                    _controller.pause();
+                                                  } else {
+                                                    _controller.play();
+                                                  }
+                                                });
+                                              },
+                                              backgroundColor: Colors.black.withValues(alpha: 0.5),
+                                              child: Icon(
+                                                _controller.value.isPlaying
+                                                    ? Icons.pause
+                                                    : Icons.play_arrow,
+                                                color: Colors.white,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      );
+                                    } else {
+                                      return const Center(child: CircularProgressIndicator());
+                                    }
                                   },
                                 ),
-                                SizedBox(width: 12.w),
-                                SizedBox(
+                                VideoProgressIndicator(
+                                  _controller,
+                                  allowScrubbing: true,
+                                  colors: const VideoProgressColors(
+                                    playedColor: Colors.pink,
+                                    bufferedColor: Colors.grey,
+                                    backgroundColor: Colors.black26,
+                                  ),
+                                ),
+                                const SizedBox(height: 16),
+                                Center(
                                   child: Text(
-                                    'Unlock Next Chapter Automatically'.g11n(
-                                      'ReadPage_AutoUnlockChapter',
-                                    ),
-                                    maxLines: 1,
+                                    _chapter!.title ?? 'Chapter',
                                     style: TextStyle(
-                                          fontSize: 12.sp,
-                                          color: HexColor('#9E9E9E'),
-                                          overflow: TextOverflow.ellipsis,
-                                        ),
+                                      fontSize: 20.sp,
+                                      fontWeight: FontWeight.bold,
+                                      color: HexColor('#fc73af'),
+                                    ),
                                   ),
                                 ),
                               ],
                             ),
                           ),
-                        ],
-                      ),
-                    )
-                  : _chapter == null
-                      ? const Center(child: Text('No Data'))
-                      : Padding(
-                          padding: const EdgeInsets.all(16.0),
-                          child: ListView(
-                            children: [
-                              const SizedBox(height: 16),
-                              FutureBuilder(
-                                future: _initializeVideoPlayerFuture,
-                                builder: (context, snapshot) {
-                                  if (snapshot.connectionState == ConnectionState.done) {
-                                    return AspectRatio(
-                                      aspectRatio: _controller.value.aspectRatio,
-                                      child: Stack(
-                                        alignment: Alignment.center,
-                                        children: [
-                                          VideoPlayer(_controller),
-                                          FloatingActionButton(
-                                            onPressed: () {
-                                              setState(() {
-                                                if (_controller.value.isPlaying) {
-                                                  _controller.pause();
-                                                } else {
-                                                  _controller.play();
-                                                }
-                                              });
-                                            },
-                                            backgroundColor: Colors.black.withValues(alpha: 0.5),
-                                            child: Icon(
-                                              _controller.value.isPlaying
-                                                  ? Icons.pause
-                                                  : Icons.play_arrow,
-                                              color: Colors.white,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    );
-                                  } else {
-                                    return const Center(child: CircularProgressIndicator());
-                                  }
-                                },
-                              ),
-                              VideoProgressIndicator(
-                                _controller,
-                                allowScrubbing: true,
-                                colors: const VideoProgressColors(
-                                  playedColor: Colors.pink,
-                                  bufferedColor: Colors.grey,
-                                  backgroundColor: Colors.black26,
-                                ),
-                              ),
-                              const SizedBox(height: 16),
-                              Center(
-                                child: Text(
-                                  _chapter!.title ?? 'Chapter',
-                                  style: TextStyle(
-                                    fontSize: 20.sp,
-                                    fontWeight: FontWeight.bold,
-                                    color: HexColor('#fc73af'),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
+          ),
           bottomNavigationBar: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
             child: Row(
